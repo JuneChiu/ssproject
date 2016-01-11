@@ -37,3 +37,15 @@ userList.on("value", function(snapshot) {
 }, function (errorObject) {
 	console.log("The read failed: " + errorObject.code);
 });
+
+
+var koa = require('koa');
+var app = koa();
+var serve = require('koa-static');
+app.use(serve('.'));
+
+app.use(function *(){
+	this.body = 'Hello World';
+});
+
+app.listen(3000);

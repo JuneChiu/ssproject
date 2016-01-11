@@ -1,6 +1,12 @@
 {
+  "name": "Shadowsocks",
+  "repository": "https://github.com/JuneChiu/ssproject",
+  "version": "1.0.0",
+  "main": "app.js",
+  "license": "ISC",
   "dependencies": {
     "firebase": "^2.3.2",
+    "koa": "^1.1.2",
     "md5": "^2.0.0"
   }
 }
