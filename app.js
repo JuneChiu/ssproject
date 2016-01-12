@@ -26,26 +26,54 @@ var ref = new Firebase("https://flickering-torch-8358.firebaseio.com/");
 //	}]
 //});
 var userList = ref.child('userList');
-userList.push({
-	account: 'june.chiu@foxmail.com',
-	password: md5('june.chiu@foxmail.com'),
-})
+//userList.push({
+//	account: 'june.chiu@foxmail.com',
+//	password: md5('june.chiu@foxmail.com'),
+//})
 
 // Attach an asynchronous callback to read the data at our posts reference
-userList.on("value", function(snapshot) {
-	console.log(snapshot.val());
-}, function (errorObject) {
-	console.log("The read failed: " + errorObject.code);
+//userList.on("value", function(snapshot) {
+//	console.log(snapshot.val());
+//}, function (errorObject) {
+//	console.log("The read failed: " + errorObject.code);
+//});
+
+
+var express = require('express');
+
+;
+
+var app = express();
+
+app.use(express.static('.'));
+
+app.get('/api/get/user', function (req, res) {
+	userList.once("value", function(snapshot) {
+		res.send(snapshot.val());
+	});
 });
 
+app.listen(3000, function () {
+	console.log('Example app listening on port 3000!');
+})
 
-var koa = require('koa');
-var app = koa();
-var serve = require('koa-static');
-app.use(serve('.'));
-
-app.use(function *(){
-	this.body = 'Hello World';
-});
-
-app.listen(3000);
+//
+//var koa = require('koa');
+//var app = koa();
+//var serve = require('koa-static');
+//var json = require('koa-json');
+//
+//var router = require('koa-router')();
+//app.use(serve('.'));
+//
+//
+//router
+//	.get('/api', function *(next) {
+//		var that = this
+//});
+//
+//app
+//	.use(router.routes())
+//	.use(router.allowedMethods());
+//
+//app.listen(3000);
