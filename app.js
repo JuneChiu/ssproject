@@ -182,11 +182,12 @@ app.get('/user/active/:id', function (req, res) {
 					password: md5(req.params.id + key),
 					index: current_value
 				}, () => {
-					res.render('index', {action: 'active-success'});
 				});
 
 				return (current_value || 0) + 1;
 			});
+
+			res.render('index', {action: 'active-success'});
 		}
 		else {
 			res.render('index', {action: 'active-fail'});
