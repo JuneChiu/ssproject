@@ -49,7 +49,7 @@ const sendActiveMail = (address, key, callback) => {
 		from: 'June Chiu <june.chiu.s@gmail.com>', // sender address
 		to: address, // list of receivers
 		subject: '有料到 - 科学上网', // Subject line
-		html: `<a href="https://junechiu.com/user/active/${key}">点击传送门，激活你的帐号</a>` // html body
+		html: `<a href="http://ninja.junechiu.com/user/active/${key}">点击传送门，激活你的帐号</a>` // html body
 	};
 
 	nodemailerMailgun.sendMail(option, callback);
@@ -201,6 +201,6 @@ app.get('/user/active/:id', function (req, res) {
 
 
 
-app.listen(3000, function () {
+app.listen(80, 'ninja.junechiu.com', function () {
 	console.log('Example app listening on port 3000!');
 });

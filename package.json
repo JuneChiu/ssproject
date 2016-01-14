@@ -5,6 +5,7 @@
   "main": "app.js",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.14.2",
     "co": "^4.6.0",
     "ejs": "^2.3.4",
     "express": "^4.13.3",
@@ -12,6 +13,7 @@
     "js-base64": "^2.1.9",
     "md5": "^2.0.0",
     "nodemailer": "^2.0.0",
+    "nodemailer-mailgun-transport": "^1.0.1",
     "qrcode": "^0.4.2"
   }
 }
