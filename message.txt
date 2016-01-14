@@ -1,1 +1,0 @@
-{"server":"0.0.0.0","port_password":{"8389":"ec2accf3e11eb287da2c8a999129f88e"},"local_port":1080,"timeout":600,"method":"aes-256-cfb"}

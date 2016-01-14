@@ -1,0 +1,140 @@
+<html lang="en" >
+<head>
+    <title>科学上网</title>
+    <link rel="stylesheet" href="http://ajax.useso.com/ajax/libs/angular_material/1.0.0/angular-material.min.css">
+    <script src="http://ajax.useso.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="http://ajax.useso.com/ajax/libs/angularjs/1.4.8/angular-animate.min.js"></script>
+    <script src="http://ajax.useso.com/ajax/libs/angularjs/1.4.8/angular-aria.min.js"></script>
+    <script src="http://ajax.useso.com/ajax/libs/angularjs/1.4.8/angular-messages.min.js"></script>
+    <script src="http://ajax.useso.com/ajax/libs/angular_material/1.0.0/angular-material.min.js"></script>
+    <script>var pageAction = '<%=locals.action%>';</script>
+</head>
+<body ng-app="app" ng-controller="Ctrl as ctrl">
+
+<div ng-cloak>
+
+    <md-content>
+        <md-progress-linear ng-if="loading" md-mode="indeterminate" style="position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;"></md-progress-linear>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button" aria-label="Settings">
+                    <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+                </md-button>
+                <h2>
+                    <span>科学上网</span>
+                </h2>
+            </div>
+        </md-toolbar>
+    </md-content>
+</div>
+
+
+<div ng-cloak>
+    <md-content class="md-padding">
+        <form ng-submit="$event.preventDefault()" name="projectForm">
+            <div layout="row">
+                <md-input-container flex>
+                    <label>邮箱地址</label>
+                    <input required type="email" name="clientEmail" ng-model="clientEmail"
+                           minlength="10" maxlength="100" ng-pattern="/^.+@.+\..+$/" />
+                    <div ng-messages="projectForm.clientEmail.$error" role="alert">
+                        <div ng-message-exp="['required', 'minlength', 'maxlength', 'pattern']">请输入合法的邮箱地址</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container flex>
+                    <label>邀请码</label>
+                    <input required type="text" name="clientCode" ng-model="clientCode" maxlength="100" />
+                    <div ng-messages="projectForm.clientCode.$error" role="alert">
+                        <div ng-message-exp="['required']">请输入邀请码</div>
+                    </div>
+                </md-input-container>
+            </div>
+
+            <section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+                <md-button class="md-raised md-primary" ng-click="signup()" ng-disabled="projectForm.$invalid || loading">获取帐号</md-button>
+            </section>
+        </form>
+    </md-content>
+</div>
+
+<!-- Your application bootstrap  -->
+<script type="text/javascript">
+    /**
+     * You must include the dependency on 'ngMaterial'
+     */
+    (function () {
+        'use strict';
+        angular
+                .module('app', ['ngMaterial', 'ngMessages'])
+                .config(function ($locationProvider) {
+                    $locationProvider.html5Mode({
+                        enabled: true,
+                        requireBase: false
+                    });
+                })
+                .controller('Ctrl', Ctrl);
+        function Ctrl ($scope, $http, $mdDialog, $location) {
+            if (pageAction === 'active-fail') {
+
+                $mdDialog.show(
+                        $mdDialog.alert()
+                                .title('激活失败')
+                                .textContent('激活链接无效，请重新填写信息获取')
+                                .ok('知道了')
+                );
+            }
+            else if (pageAction === 'active-success') {
+                $mdDialog.show(
+                        $mdDialog.alert()
+                                .title('激活成功')
+                                .textContent('帐号已经以二维码形式发送到你的邮箱')
+                                .ok('知道了')
+                );
+            }
+
+            $scope.signup = function() {
+                var account = $scope.projectForm.clientEmail.$viewValue;
+
+                $scope.loading = true;
+
+                $http({
+                    method: 'POST',
+                    url: '/api/post/signup',
+                    data: {account}
+                }).then(response =>{
+
+                    $scope.loading = false;
+
+                   if (response.data.active) {
+                       $mdDialog.show(
+                               $mdDialog.alert()
+                                       .clickOutsideToClose(true)
+                                       .title('帐号已激活')
+                                       .textContent(response.data.msg)
+                                       .ok('知道了')
+                       );
+                   }
+                   else {
+                       $mdDialog.show(
+                               $mdDialog.alert()
+                                       .clickOutsideToClose(true)
+                                       .title('等待激活')
+                                       .textContent(response.data.msg)
+                                       .ok('知道了')
+                       );
+                   }
+                }, response => {
+                    console.log(response);
+                });
+            };
+        }
+    })();
+</script>
+
+</body>
+</html>
