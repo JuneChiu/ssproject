@@ -106,7 +106,7 @@
                     method: 'POST',
                     url: '/api/post/signup',
                     data: {account}
-                }).then(response =>{
+                }).then(function(response) {
 
                     $scope.loading = false;
 
@@ -128,7 +128,7 @@
                                        .ok('知道了')
                        );
                    }
-                }, response => {
+                }, function(response) {
                     console.log(response);
                 });
             };

@@ -2,7 +2,6 @@ const fs = require('fs');
 const md5 = require('md5');
 const QRCode = require('qrcode');
 const exec = require('child_process').exec;
-const sys = require('sys');
 
 // 发送邮箱功能
 const nodemailer = require('nodemailer'),
@@ -176,18 +175,17 @@ app.get('/user/active/:id', function (req, res) {
 		const account = value[key];
 		if (account && !account.active) {
 			// 激活成功
-			ref.child('count').transaction(function (current_value) {
+			ref.child('user').once('value', (snapshot) => {
+				const value = snapshot.val() || {};
+
 				snapshot.ref().child(key).update({
 					active: true,
 					password: md5(req.params.id + key),
-					index: current_value
+					index: Object.keys(value).length
 				}, () => {
+					res.render('index', {action: 'active-success'});
 				});
-
-				return (current_value || 0) + 1;
 			});
-
-			res.render('index', {action: 'active-success'});
 		}
 		else {
 			res.render('index', {action: 'active-fail'});
@@ -202,6 +200,6 @@ app.get('/user/active/:id', function (req, res) {
 
 
 
-app.listen(80, 'ninja.junechiu.com', function () {
+app.listen(8080, 'ninja.junechiu.com', function () {
 	console.log('Example app listening on port 3000!');
 });
