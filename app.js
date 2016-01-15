@@ -88,7 +88,7 @@ const sendSettingMail = (account, callback) => {
 
 
 				// 重启服务
-				exec('ssserver -c setting.json -d start', function (error, stdout, stderr) {
+				exec('ssserver -c setting.json -d restart', function (error, stdout, stderr) {
 					if (error !== null) {
 						console.log('exec error: ' + error);
 					}
@@ -174,7 +174,7 @@ app.get('/user/active/:id', function (req, res) {
 		const key = Object.keys(value)[0];
 		const account = value[key];
 		if (account && !account.active) {
-			// 激活成功
+			// active account successfully
 			ref.child('user').once('value', (snapshot) => {
 				const value = snapshot.val() || {};
 
@@ -186,17 +186,10 @@ app.get('/user/active/:id', function (req, res) {
 
 					snapshot.ref().child(key).once('value', (snapshot) => {
 						const value = snapshot.val();
-						console.log(value);
 						sendSettingMail(value, () => {
-							res.send({
-								code: 0,
-								active: value.active,
-								msg: '帐号信息已经发送到 - ' + value.name
-							});
+							res.render('index', {action: 'active-success'});
 						});
 					});
-
-					res.render('index', {action: 'active-success'});
 				});
 			});
 		}
@@ -209,6 +202,6 @@ app.get('/user/active/:id', function (req, res) {
 
 });
 
-app.listen(8080, 'ninja.junechiu.com', function () {
+app.listen(80, 'ninja.junechiu.com', function () {
 	console.log('Example app listening on port 3000!');
 });
