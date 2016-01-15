@@ -5,7 +5,8 @@ const exec = require('child_process').exec;
 
 // 发送邮箱功能
 const nodemailer = require('nodemailer'),
-	mg = require('nodemailer-mailgun-transport');
+	mg = require('nodemailer-mailgun-transport'),
+	smtpTransport = require('nodemailer-smtp-transport');
 
 const shadowsocksSetting = require('./shadowsocks-setting.json');
 
@@ -15,21 +16,23 @@ const Firebase = require("firebase");
 
 
 // 设置邮件收发服务
-const nodemailerMailgun = nodemailer.createTransport(mg({
+const nodemailerMailServer = nodemailer.createTransport(smtpTransport({
+	host: 'smtp.qq.com',
+	secure: true,
+	port: 465,
 	auth: {
-		api_key: 'key-e497ebd7414dcc5fe16b321a9894de5f',
-		domain: 'sandbox159a9aa753254d559333a26496830e59.mailgun.org'
+		user: '447379852@qq.com',
+		pass: 'xlqxlq163163'
 	}
 }));
 
-// Get a database reference to our posts
+// 设置数据库连接地址
 const ref = new Firebase("https://flickering-torch-8358.firebaseio.com/");
 const app = express();
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 app.use(express.static('resouce'));
 
 app.get('/', function(req, res) {
@@ -45,13 +48,13 @@ app.get('/api/get/user', function (req, res) {
 
 const sendActiveMail = (address, key, callback) => {
 	const option = {
-		from: 'June Chiu <june.chiu.s@gmail.com>', // sender address
-		to: address, // list of receivers
-		subject: '有料到 - 科学上网', // Subject line
-		html: `<a href="http://ninja.junechiu.com/user/active/${key}">点击传送门，激活你的帐号</a>` // html body
+		from: 'June Chiu <june.chiu@foxmail.com>',
+		to: address,
+		subject: '机智的好俊提醒你',
+		html: `<a href="http://ninja.junechiu.com/user/active/${key}">点击传送门，激活你的帐号</a>`
 	};
 
-	nodemailerMailgun.sendMail(option, callback);
+	nodemailerMailServer.sendMail(option, callback);
 };
 
 const sendSettingMail = (account, callback) => {
@@ -60,9 +63,7 @@ const sendSettingMail = (account, callback) => {
 	console.log('Query all users starting');
 	ref.child('user').orderByChild('active').equalTo(true).once("value", function(snapshot) {
 		console.log('Query all users finish');
-		const users = snapshot.val();
-
-		const allAccount = {}, basePort = 30000;
+		const users = snapshot.val(), allAccount = {}, basePort = 30000;
 
 		Object.keys(users).forEach(item => {
 			allAccount[(users[item].index - 0) + basePort] = users[item].password;
@@ -71,14 +72,14 @@ const sendSettingMail = (account, callback) => {
 		QRCode.toDataURL('ss://' + shadowsocksSetting.method + ':' + account.password + '@47.88.160.69:' + ((account.index - 0) + basePort),function(err,url){
 
 			const option = {
-				from: 'June Chiu <june.chiu.s@gmail.com>', // sender address
+				from: 'June Chiu <june.chiu@foxmail.com>', // sender address
 				to: account.name, // list of receivers
-				subject: '有料到 - 科学上网', // Subject line
-				html: '<p>设置信息为：' + 'ss://' + shadowsocksSetting.method + ':' + account.password + '@47.88.160.69:' + ((account.index - 0) + basePort) +'</p>' + `<p>或者扫描以下二维码，设置你的Shadowsocks客户端</p><img src="${url}">` // html body
+				subject: '机智的好俊提醒你', // Subject line
+				html: 'Shadowsocks设置信息为：' + '<br>加密方式：' + shadowsocksSetting.method + '<br>密码：' + account.password + '<br>服务器地址：47.88.160.69:' + ((account.index - 0) + basePort) +'' + `<p>或者扫描以下二维码，设置你的Shadowsocks客户端</p><img src="${url}">` // html body
 			};
 
 			console.log('Sending mail to ' + option.to);
-			nodemailerMailgun.sendMail(option, () => {
+			nodemailerMailServer.sendMail(option, () => {
 
 				shadowsocksSetting.port_password = Object.assign({}, shadowsocksSetting.port_password, allAccount);
 
