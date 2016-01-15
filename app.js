@@ -74,7 +74,7 @@ const sendSettingMail = (account, callback) => {
 				from: 'June Chiu <june.chiu.s@gmail.com>', // sender address
 				to: account.name, // list of receivers
 				subject: '有料到 - 科学上网', // Subject line
-				html: `<p>扫描二维码，设置你的Shadowsocks客户端</p><img src="${url}">` // html body
+				html: '<p>设置信息为：' + 'ss://' + shadowsocksSetting.method + ':' + account.password + '@47.88.160.69:' + ((account.index - 0) + basePort) +'</p>' + `<p>或者扫描以下二维码，设置你的Shadowsocks客户端</p><img src="${url}">` // html body
 			};
 
 			console.log('Sending mail to ' + option.to);
@@ -126,6 +126,7 @@ app.post('/api/post/signup', function (req, res) {
 			}
 			else {
 				// 发送激活连接到邮箱
+				console.log('Sending active mail to ' + account.name);
 				sendActiveMail(account.name, account.password, (err, response) => {
 					if (err) {
 						console.log(err);
@@ -135,6 +136,8 @@ app.post('/api/post/signup', function (req, res) {
 							active: account.active,
 							msg: '激活邮件已经发送到 - ' + account.name
 						});
+
+						console.log('Have sent to ' + account.name);
 					}
 				});
 			}
