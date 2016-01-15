@@ -57,9 +57,9 @@ const sendActiveMail = (address, key, callback) => {
 const sendSettingMail = (account, callback) => {
 
 	// 先查出所有已经激活的用户
-	console.log('开始查询所有用户');
+	console.log('Query all users starting');
 	ref.child('user').orderByChild('active').equalTo(true).once("value", function(snapshot) {
-		console.log('完成查询所有用户');
+		console.log('Query all users finish');
 		const users = snapshot.val();
 
 		const allAccount = {}, basePort = 30000;
@@ -77,7 +77,7 @@ const sendSettingMail = (account, callback) => {
 				html: `<p>扫描二维码，设置你的Shadowsocks客户端</p><img src="${url}">` // html body
 			};
 
-			console.log('开始发送邮件');
+			console.log('Sending mail to ' + option.to);
 			nodemailerMailgun.sendMail(option, () => {
 
 				shadowsocksSetting.port_password = Object.assign({}, shadowsocksSetting.port_password, allAccount);
@@ -88,17 +88,17 @@ const sendSettingMail = (account, callback) => {
 
 
 				// 重启服务
-				exec('ssserver –c setting.json -d start', function (error, stdout, stderr) {
+				exec('ssserver -c setting.json -d start', function (error, stdout, stderr) {
 					if (error !== null) {
 						console.log('exec error: ' + error);
 					}
 					else {
 						// 成功重启服务
-						console.log('成功重启');
+						console.log('Restart the service successfully');
 					}
 				});
 
-				console.log('完成发送邮件');
+				console.log('Have sent to ' + option.to);
 
 				callback();
 			});
@@ -183,6 +183,19 @@ app.get('/user/active/:id', function (req, res) {
 					password: md5(req.params.id + key),
 					index: Object.keys(value).length
 				}, () => {
+
+					snapshot.ref().child(key).once('value', (snapshot) => {
+						const value = snapshot.val();
+						console.log(value);
+						sendSettingMail(value, () => {
+							res.send({
+								code: 0,
+								active: value.active,
+								msg: '帐号信息已经发送到 - ' + value.name
+							});
+						});
+					});
+
 					res.render('index', {action: 'active-success'});
 				});
 			});
@@ -195,10 +208,6 @@ app.get('/user/active/:id', function (req, res) {
 
 
 });
-
-
-
-
 
 app.listen(8080, 'ninja.junechiu.com', function () {
 	console.log('Example app listening on port 3000!');
