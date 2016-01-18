@@ -33,7 +33,7 @@ module.exports = (app) => {
 					// 如果已经存在帐号但是未激活，则发送激活连接到邮箱
 					console.log('Sending active mail to ' + account.name);
 
-					app.service.mail.sendActiveMail(account.name, account.password, (err, response) => {
+					app.service.mail.sendActiveMail(account.name, (err, response) => {
 						if (err) {
 							console.log(err);
 						}
