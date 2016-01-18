@@ -105,7 +105,7 @@
                 $http({
                     method: 'POST',
                     url: '/api/post/signup',
-                    data: {account}
+                    data: {account: account}
                 }).then(function(response) {
 
                     $scope.loading = false;
