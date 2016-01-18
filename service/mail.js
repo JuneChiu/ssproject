@@ -1,5 +1,6 @@
 const md5 = require('md5'),
 	QRCode = require('qrcode'),
+	base64 = require('js-base64').Base64,
 	fs = require('fs'),
 	exec = require('child_process').exec,
 	nodemailer = require('nodemailer'),
@@ -50,7 +51,7 @@ module.exports = (app) => {
 			});
 
 			const currentAccountServerPort = (account.index - 0) + basePort;
-			QRCode.toDataURL('ss://' + shadowsocksSetting.method + ':' + account.password + '@47.88.160.69:' + currentAccountServerPort,function(err,url){
+			QRCode.toDataURL('ss://' + base64.encode(shadowsocksSetting.method + ':' + account.password + '@47.88.160.69:' + currentAccountServerPort),function(err,url){
 
 				const option = {
 					from: 'June Chiu <june.chiu@163.com>',
