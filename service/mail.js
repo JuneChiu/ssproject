@@ -1,4 +1,5 @@
-const QRCode = require('qrcode'),
+const md5 = require('md5'),
+	QRCode = require('qrcode'),
 	fs = require('fs'),
 	exec = require('child_process').exec,
 	nodemailer = require('nodemailer'),
@@ -20,12 +21,12 @@ const shadowsocksSetting = require('../shadowsocks-setting.json');
 module.exports = (app) => {
 	const output = {};
 
-	output.sendActiveMail = (address, key, callback) => {
+	output.sendActiveMail = (address, callback) => {
 		const option = {
 			from: 'June Chiu <june.chiu@163.com>',
 			to: address,
 			subject: '科学上网帐号激活',
-			html: `<a href="http://ss.junechiu.com/user/active/${key}">点击传送门，激活你的帐号</a>`
+			html: `<a href="http://ss.junechiu.com/user/active/${md5(address)}">点击传送门，激活你的帐号</a>`
 		};
 
 		nodemailerMailServer.sendMail(option, callback);

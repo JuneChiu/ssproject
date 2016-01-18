@@ -59,7 +59,7 @@ module.exports = (app) => {
 				}, function(){
 
 					// 发送激活连接到邮箱
-					app.service.mail.sendActiveMail(req.body.account, key, (err, response) => {
+					app.service.mail.sendActiveMail(req.body.account, (err, response) => {
 						if (err) {
 							console.log(err);
 						} else {
